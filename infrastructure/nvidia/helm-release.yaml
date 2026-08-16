@@ -23,8 +23,14 @@ spec:
   values:
     runtimeClass:
       enabled: true  # creates the "nvidia" RuntimeClass
-    # Talos installs NVIDIA libs at /usr/local/lib, not /usr/lib
-    nvidiaDriverRoot: /usr/local
+    # libs are in /usr/local/lib but devices are at the standard /dev path
+    config:
+      map:
+        default: |-
+          version: v1
+          flags:
+            nvidiaDriverRoot: /usr/local
+            nvidiaDevRoot: /
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
