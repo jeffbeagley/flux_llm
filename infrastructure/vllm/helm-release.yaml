@@ -49,7 +49,6 @@ spec:
           limitMemory: "32Gi"
           vllmConfig:
             extraArgs:
-              - "--enable-reasoning"
               - "--reasoning-parser"
               - "deepseek_r1"
               - "--kv-cache-memory=5368709120"  # 5 GiB, sized for tight 4090 headroom
