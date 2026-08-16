@@ -13,6 +13,8 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  dependsOn:
+    - name: nvidia-device-plugin
   chart:
     spec:
       chart: vllm-stack
