@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
+  timeout: 15m
   targetNamespace: vllm
   install:
     createNamespace: true
@@ -28,6 +29,10 @@ spec:
       serviceType: NodePort
       nodePort: 30800
     servingEngineSpec:
+      startupProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        failureThreshold: 60
       modelSpec:
         - name: "qwen2-5-7b"
           enabled: true
