@@ -23,6 +23,8 @@ spec:
   values:
     runtimeClass:
       enabled: true  # creates the "nvidia" RuntimeClass
+    deviceDiscoveryStrategy: cdi
+    deviceListStrategy: cdi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
