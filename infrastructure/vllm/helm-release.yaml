@@ -22,6 +22,9 @@ spec:
         name: vllm
         namespace: flux-system
   values:
+    routerSpec:
+      serviceType: NodePort
+      nodePort: 30800
     servingEngineSpec:
       modelSpec:
         - name: "qwen2-5-7b"
