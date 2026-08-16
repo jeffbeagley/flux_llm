@@ -24,13 +24,12 @@ spec:
   values:
     servingEngineSpec:
       modelSpec:
-        - name: "llm"
-          # Set enabled: true and fill in modelURL before syncing
-          enabled: false
+        - name: "qwen2-5-7b"
+          enabled: true
           runtimeClassName: "nvidia"
           repository: "lmcache/vllm-openai"
           tag: "latest"
-          modelURL: ""  # e.g. "meta-llama/Llama-3.1-8B-Instruct"
+          modelURL: "Qwen/Qwen2.5-7B-Instruct"
           replicaCount: 1
           requestCPU: 6
           requestMemory: "16Gi"
@@ -38,3 +37,9 @@ spec:
           requestGPUType: "nvidia.com/gpu"
           limitCPU: 8
           limitMemory: "32Gi"
+        # Add additional models here when ready:
+        # - name: "qwen2-5-14b"
+        #   enabled: false
+        #   modelURL: "Qwen/Qwen2.5-14B-Instruct"
+        #   requestGPU: 1
+        #   requestGPUType: "nvidia.com/gpu"
