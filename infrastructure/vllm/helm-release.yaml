@@ -34,12 +34,12 @@ spec:
         periodSeconds: 10
         failureThreshold: 60
       modelSpec:
-        - name: "qwen2-5-7b"
+        - name: "qwen3-32b-awq"
           enabled: true
           runtimeClassName: "nvidia"
           repository: "lmcache/vllm-openai"
           tag: "latest"
-          modelURL: "Qwen/Qwen2.5-7B-Instruct"
+          modelURL: "Qwen/Qwen3-32B-AWQ"
           replicaCount: 1
           requestCPU: 6
           requestMemory: "16Gi"
@@ -47,9 +47,9 @@ spec:
           requestGPUType: "nvidia.com/gpu"
           limitCPU: 8
           limitMemory: "32Gi"
-        # Add additional models here when ready:
-        # - name: "qwen2-5-14b"
-        #   enabled: false
-        #   modelURL: "Qwen/Qwen2.5-14B-Instruct"
-        #   requestGPU: 1
-        #   requestGPUType: "nvidia.com/gpu"
+          vllmConfig:
+            extraArgs:
+              - "--enable-reasoning"
+              - "--reasoning-parser"
+              - "deepseek_r1"
+              - "--kv-cache-memory=5368709120"  # 5 GiB, sized for tight 4090 headroom
