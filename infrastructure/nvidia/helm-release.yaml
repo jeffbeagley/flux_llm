@@ -25,16 +25,8 @@ spec:
       enabled: true  # creates the "nvidia" RuntimeClass
     securityContext:
       privileged: true
-    # top-level sets the /driver-root mount and LD_LIBRARY_PATH; config map overrides nvidiaDevRoot
+    # Talos installs NVIDIA libs at /usr/local/lib — sets /driver-root mount and LD_LIBRARY_PATH
     nvidiaDriverRoot: /usr/local
-    config:
-      default: "default"
-      map:
-        default: |-
-          version: v1
-          flags:
-            nvidiaDriverRoot: /usr/local
-            nvidiaDevRoot: /
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
