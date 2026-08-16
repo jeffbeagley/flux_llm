@@ -23,8 +23,8 @@ spec:
   values:
     runtimeClass:
       enabled: true  # creates the "nvidia" RuntimeClass
-    deviceDiscoveryStrategy: cdi
-    deviceListStrategy: cdi
+    # Talos installs NVIDIA libs at /usr/local/lib, not /usr/lib
+    nvidiaDriverRoot: /usr/local
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
