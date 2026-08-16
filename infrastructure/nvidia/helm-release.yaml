@@ -23,8 +23,11 @@ spec:
   values:
     runtimeClass:
       enabled: true  # creates the "nvidia" RuntimeClass
-    # libs are in /usr/local/lib but devices are at the standard /dev path
+    securityContext:
+      privileged: true
+    # libs in /usr/local/lib; devices remain at /dev
     config:
+      default: "default"
       map:
         default: |-
           version: v1
