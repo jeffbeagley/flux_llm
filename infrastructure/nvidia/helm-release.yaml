@@ -21,8 +21,6 @@ spec:
         name: nvidia-device-plugin
         namespace: flux-system
   values:
-    runtimeClass:
-      enabled: true  # creates the "nvidia" RuntimeClass
     securityContext:
       privileged: true
     # Talos installs NVIDIA libs at /usr/local/lib — sets /driver-root mount and LD_LIBRARY_PATH
