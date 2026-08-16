@@ -24,3 +24,14 @@ spec:
   values:
     runtimeClass:
       enabled: true  # creates the "nvidia" RuntimeClass
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: extensions.talos.dev/nonfree-kmod-nvidia-production
+                  operator: Exists
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
