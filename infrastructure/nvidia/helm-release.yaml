@@ -25,7 +25,8 @@ spec:
       enabled: true  # creates the "nvidia" RuntimeClass
     securityContext:
       privileged: true
-    # libs in /usr/local/lib; devices remain at /dev
+    # top-level sets the /driver-root mount and LD_LIBRARY_PATH; config map overrides nvidiaDevRoot
+    nvidiaDriverRoot: /usr/local
     config:
       default: "default"
       map:
