@@ -1,0 +1,15 @@
+# ConfigMap for HelmRelease values override.
+# Reference this file from config/configmaps/kustomization.yaml once you add an entry.
+# The HelmRelease must reference it via spec.valuesFrom.
+#
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: <release-name>-values
+#   namespace: <namespace>     # must match the HelmRelease namespace
+# data:
+#   values.yaml: |
+#     replicaCount: 1
+#     service:
+#       type: ClusterIP
