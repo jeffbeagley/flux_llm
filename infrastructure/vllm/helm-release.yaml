@@ -52,5 +52,5 @@ spec:
               - "--reasoning-parser"
               - "deepseek_r1"
               - "--quantization=compressed_tensors"
-              - "--gpu-memory-utilization=0.90"
+              - "--kv-cache-memory=7502013440"
               - "--max-model-len=32768"
