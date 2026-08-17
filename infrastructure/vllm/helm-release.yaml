@@ -51,6 +51,6 @@ spec:
             extraArgs:
               - "--reasoning-parser"
               - "deepseek_r1"
-              - "--quantization=compressed_tensors"
+              - "--quantization=compressed-tensors"
               - "--kv-cache-memory=7502013440"
               - "--max-model-len=32768"
