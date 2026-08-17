@@ -51,5 +51,5 @@ spec:
             extraArgs:
               - "--reasoning-parser"
               - "deepseek_r1"
-              - "--kv-cache-memory=5368709120"  # 5 GiB, sized for tight 4090 headroom
-              - "--max-model-len=32768"
+              - "--gpu-memory-utilization=0.98"
+              - "--max-model-len=16384"
