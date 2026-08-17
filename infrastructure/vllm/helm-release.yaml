@@ -51,6 +51,6 @@ spec:
             extraArgs:
               - "--reasoning-parser"
               - "deepseek_r1"
-              - "--quantization=awq"
+              - "--quantization=compressed_tensors"
               - "--gpu-memory-utilization=0.90"
               - "--max-model-len=32768"
