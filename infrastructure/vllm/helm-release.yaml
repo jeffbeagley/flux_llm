@@ -39,7 +39,7 @@ spec:
           runtimeClassName: "nvidia"
           repository: "lmcache/vllm-openai"
           tag: "latest"
-          modelURL: "Qwen/Qwen3-32B-AWQ"
+          modelURL: "Qwen/Qwen3.8-27B-FP8"
           replicaCount: 1
           requestCPU: 6
           requestMemory: "16Gi"
@@ -52,3 +52,4 @@ spec:
               - "--reasoning-parser"
               - "deepseek_r1"
               - "--kv-cache-memory=5368709120"  # 5 GiB, sized for tight 4090 headroom
+              - "--max-model-len=32768"
