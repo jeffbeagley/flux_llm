@@ -34,7 +34,7 @@ spec:
         periodSeconds: 10
         failureThreshold: 60
       modelSpec:
-        - name: "qwen3-32b-awq"
+        - name: "qwen3-8-27b-fp8"
           enabled: true
           runtimeClassName: "nvidia"
           repository: "lmcache/vllm-openai"
