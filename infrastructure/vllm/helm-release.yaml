@@ -16,6 +16,7 @@ spec:
       retries: 3
   dependsOn:
     - name: nvidia-device-plugin
+      namespace: nvidia-device-plugin
   chart:
     spec:
       chart: vllm-stack
