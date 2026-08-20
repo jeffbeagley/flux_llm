@@ -56,5 +56,4 @@ spec:
               - "--max-num-seqs=1"
               - "--gpu-memory-utilization=0.95"
               - "--kv-cache-dtype=fp8"
-              - "--swap-space=8"
               - "--enforce-eager"
