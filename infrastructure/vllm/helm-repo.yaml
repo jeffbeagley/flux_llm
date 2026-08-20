@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: vllm
-  namespace: flux-system
+  namespace: vllm
 spec:
   interval: 1h
   url: https://vllm-project.github.io/production-stack
