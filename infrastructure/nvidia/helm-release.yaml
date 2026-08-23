@@ -21,6 +21,18 @@ spec:
         name: nvidia-device-plugin
         namespace: nvidia-device-plugin
   values:
+    config:
+      default: default
+      map:
+        default: |-
+          version: v1
+          sharing:
+            timeSlicing:
+              renameByDefault: false
+              failRequestsGreaterThanOne: false
+              resources:
+                - name: nvidia.com/gpu
+                  replicas: 5
     securityContext:
       privileged: true
     # Talos installs NVIDIA libs at /usr/local/lib — sets /driver-root mount and LD_LIBRARY_PATH
