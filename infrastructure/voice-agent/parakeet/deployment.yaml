@@ -16,7 +16,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: parakeet
-          image: ghcr.io/achetronic/parakeet:latest-cuda
+          image: ghcr.io/achetronic/parakeet:0.8-cuda
           args:
             - "-gpu"
             - "cuda"

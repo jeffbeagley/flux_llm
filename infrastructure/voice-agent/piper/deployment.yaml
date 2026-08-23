@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piper-tts
+  namespace: voice-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: piper-tts
+  template:
+    metadata:
+      labels:
+        app: piper-tts
+    spec:
+      containers:
+        - name: piper
+          image: rhasspy/wyoming-piper:2.4.2
+          args:
+            - "--voice"
+            - "en_US-lessac-medium"
+          ports:
+            - containerPort: 10200
+          volumeMounts:
+            - name: piper-cache
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+      volumes:
+        - name: piper-cache
+          persistentVolumeClaim:
+            claimName: piper-cache
