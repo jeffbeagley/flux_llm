@@ -17,34 +17,8 @@ helm upgrade --install vllm vllm/vllm-stack \
   --namespace vllm \
   --create-namespace \
   --timeout 15m \
-  --set routerSpec.serviceType=NodePort \
-  --set routerSpec.nodePort=30800 \
-  --set servingEngineSpec.startupProbe.initialDelaySeconds=30 \
-  --set servingEngineSpec.startupProbe.periodSeconds=10 \
-  --set servingEngineSpec.startupProbe.failureThreshold=60 \
-  --set 'servingEngineSpec.modelSpec[0].name=qwen3-8-27b-awq' \
-  --set servingEngineSpec.modelSpec[0].enabled=true \
-  --set servingEngineSpec.modelSpec[0].runtimeClassName=nvidia \
-  --set servingEngineSpec.modelSpec[0].repository=lmcache/vllm-openai \
-  --set servingEngineSpec.modelSpec[0].tag=latest \
-  --set servingEngineSpec.modelSpec[0].modelURL=cyankiwi/Qwen3.8-27B-AWQ-INT4 \
-  --set servingEngineSpec.modelSpec[0].replicaCount=1 \
-  --set servingEngineSpec.modelSpec[0].requestCPU=6 \
-  --set 'servingEngineSpec.modelSpec[0].requestMemory=16Gi' \
-  --set servingEngineSpec.modelSpec[0].requestGPU=1 \
-  --set 'servingEngineSpec.modelSpec[0].requestGPUType=nvidia.com/gpu' \
-  --set servingEngineSpec.modelSpec[0].limitCPU=8 \
-  --set 'servingEngineSpec.modelSpec[0].limitMemory=32Gi' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[0]=--quantization=awq' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[1]=--dtype=auto' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[2]=--max-model-len=4096' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[3]=--max-num-seqs=1' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[4]=--gpu-memory-utilization=0.95' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[5]=--kv-cache-dtype=fp8' \
-  --set 'servingEngineSpec.modelSpec[0].vllmConfig.extraArgs[6]=--enforce-eager'
+  -f values.yaml
 ```
-
-> **Tip:** For iterative value changes, prefer a `values.yaml` override file and use `-f values-override.yaml` instead of many `--set` flags.
 
 ## Uninstall
 

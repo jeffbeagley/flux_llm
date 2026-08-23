@@ -35,25 +35,42 @@ spec:
         periodSeconds: 10
         failureThreshold: 60
       modelSpec:
-        - name: "qwen3-8-27b-awq"
+        - name: "qwen3-5-9b"
           enabled: true
           runtimeClassName: "nvidia"
           repository: "lmcache/vllm-openai"
           tag: "latest"
-          modelURL: "cyankiwi/Qwen3.8-27B-AWQ-INT4"
+          modelURL: "cyankiwi/Qwen3.5-9B-AWQ-4bit"
           replicaCount: 1
           requestCPU: 6
           requestMemory: "16Gi"
           requestGPU: 1
           requestGPUType: "nvidia.com/gpu"
           limitCPU: 8
-          limitMemory: "32Gi"
+          limitMemory: "22Gi"
+          env:
+            - name: HF_HUB_CACHE
+              value: /model-cache/hub
+            - name: HUGGINGFACE_HUB_CACHE
+              value: /model-cache/hub
+            - name: TRANSFORMERS_CACHE
+              value: /model-cache/transformers
+          extraVolumeMounts:
+            - name: model-cache
+              mountPath: /model-cache
+          extraVolumes:
+            - name: model-cache
+              persistentVolumeClaim:
+                claimName: vllm-model-cache
           vllmConfig:
             extraArgs:
-              - "--quantization=awq"
+              - "--quantization=compressed-tensors"
               - "--dtype=auto"
-              - "--max-model-len=4096"
-              - "--max-num-seqs=1"
-              - "--gpu-memory-utilization=0.95"
-              - "--kv-cache-dtype=fp8"
-              - "--enforce-eager"
+              - "--trust-remote-code"
+              - "--tensor-parallel-size=1"  
+              - "--max-model-len=32768"          # ← biggest win (was 262k)
+              - "--gpu-memory-utilization=0.55"  # ← leave headroom for other models
+              - "--enable-auto-tool-choice"
+              - "--tool-call-parser=qwen3_coder"
+              - "--reasoning-parser=qwen3"
+              - "--max-num-seqs=64"
