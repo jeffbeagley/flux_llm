@@ -17,7 +17,7 @@ servingEngineSpec:
       replicaCount: 1
       requestCPU: 6
       requestMemory: "16Gi"
-      requestGPU: 1
+      requestGPU: 2
       requestGPUType: "nvidia.com/gpu"
       limitCPU: 8
       limitMemory: "22Gi"
