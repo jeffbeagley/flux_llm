@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parakeet-api
+  namespace: speech-to-text
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parakeet-api
+  template:
+    metadata:
+      labels:
+        app: parakeet-api
+    spec:
+      runtimeClassName: nvidia
+      containers:
+        - name: parakeet
+          image: ghcr.io/achetronic/parakeet:0.8-fp32
+          ports:
+            - containerPort: 5092
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+            requests:
+              nvidia.com/gpu: 1
