@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vllm-model-cache
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /var/mnt/vllm-model-cache
+    type: DirectoryOrCreate
+  claimRef:
+    namespace: vllm
+    name: vllm-model-cache

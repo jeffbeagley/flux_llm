@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: parakeet-api
-  namespace: speech-to-text
+  namespace: voice-agent
 spec:
   replicas: 1
   selector:
@@ -16,7 +16,12 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: parakeet
-          image: ghcr.io/achetronic/parakeet:0.8-fp32
+          image: ghcr.io/achetronic/parakeet:latest-cuda
+          args:
+            - "-gpu"
+            - "cuda"
+            - "-gpu-device"
+            - "0"
           ports:
             - containerPort: 5092
           resources:

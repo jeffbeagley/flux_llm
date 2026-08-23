@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: parakeet-api
-  namespace: speech-to-text
+  namespace: voice-agent
 spec:
   type: ClusterIP
   selector:

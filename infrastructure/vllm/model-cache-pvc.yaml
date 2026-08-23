@@ -4,6 +4,8 @@ metadata:
   name: vllm-model-cache
   namespace: vllm
 spec:
+  storageClassName: manual
+  volumeName: vllm-model-cache
   accessModes:
     - ReadWriteOnce
   resources:
