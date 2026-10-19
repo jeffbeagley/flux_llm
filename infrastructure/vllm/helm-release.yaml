@@ -68,7 +68,7 @@ spec:
               - "--dtype=auto"
               - "--trust-remote-code"
               - "--tensor-parallel-size=1"  
-              - "--max-model-len=32768"          # ← biggest win (was 262k)
+              - "--max-model-len=65536"          # ← biggest win (was 262k)
               - "--gpu-memory-utilization=0.55"  # ← leave headroom for other models
               - "--enable-auto-tool-choice"
               - "--tool-call-parser=qwen3_coder"
