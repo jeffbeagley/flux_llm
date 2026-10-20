@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-server
+  namespace: vllm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: llama-server
+  template:
+    metadata:
+      labels:
+        app: llama-server
+    spec:
+      runtimeClassName: nvidia
+      initContainers:
+        - name: download-model
+          image: curlimages/curl:8.12.1
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              mkdir -p /model-cache/llama/Qwen3.6-35B-A3B
+              cd /model-cache/llama/Qwen3.6-35B-A3B
+              for file in Qwen3.6-35B-A3B-UD-Q4_K_M.gguf mmproj-F16.gguf; do
+                if [ ! -s "$file" ]; then
+                  curl --fail --location --retry 5 --retry-delay 5 \
+                    --output "$file.part" \
+                    "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/a483e9e6cbd595906af30beda3187c2663a1118c/$file"
+                  mv "$file.part" "$file"
+                fi
+              done
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          volumeMounts:
+            - name: model-cache
+              mountPath: /model-cache
+      containers:
+        - name: llama-server
+          image: ghcr.io/ggml-org/llama.cpp:server-cuda
+          imagePullPolicy: Always
+          args:
+            - --model
+            - /model-cache/llama/Qwen3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf
+            - --mmproj
+            - /model-cache/llama/Qwen3.6-35B-A3B/mmproj-F16.gguf
+            - --alias
+            - qwen3.6-35b-a3b
+            - --n-gpu-layers
+            - "99"
+            - --n-cpu-moe
+            - "8"
+            - --ctx-size
+            - "65536"
+            - --parallel
+            - "1"
+            - --flash-attn
+            - "on"
+            - --cache-type-k
+            - q8_0
+            - --cache-type-v
+            - q8_0
+            - --jinja
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: "6"
+              memory: 16Gi
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8"
+              memory: 22Gi
+              nvidia.com/gpu: 1
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 180
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          volumeMounts:
+            - name: model-cache
+              mountPath: /model-cache
+              readOnly: true
+      volumes:
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: vllm-model-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-server
+  namespace: vllm
+spec:
+  type: NodePort
+  selector:
+    app: llama-server
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30800
