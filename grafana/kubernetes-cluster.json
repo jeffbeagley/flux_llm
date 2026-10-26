@@ -70,12 +70,12 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
-      "targets": [{ "expr": "sum(k8s_node_cpu_usage)", "instant": true, "refId": "A" }],
-      "title": "CPU in Use",
+      "targets": [{ "expr": "100 * sum(k8s_node_cpu_usage) / scalar(sum(system_cpu_logical_count{k8s_node_name=~\".+\"}))", "instant": true, "refId": "A" }],
+      "title": "Cluster CPU Utilization",
       "type": "stat"
     },
     {
@@ -90,12 +90,12 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
       "id": 7,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "targets": [{ "expr": "sum by (k8s_node_name) (k8s_node_cpu_usage{k8s_node_name=~\"$node\"})", "legendFormat": "{{k8s_node_name}}", "refId": "A" }],
-      "title": "Node CPU Usage",
+      "targets": [{ "expr": "100 * sum by (k8s_node_name) (k8s_node_cpu_usage{k8s_node_name=~\"$node\"}) / on (k8s_node_name) sum by (k8s_node_name) (system_cpu_logical_count{k8s_node_name=~\"$node\"})", "legendFormat": "{{k8s_node_name}}", "refId": "A" }],
+      "title": "Node CPU Utilization",
       "type": "timeseries"
     },
     {
@@ -120,12 +120,12 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
       "id": 10,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "targets": [{ "expr": "topk(10, sum by (k8s_namespace_name) (k8s_pod_cpu_usage{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}))", "legendFormat": "{{k8s_namespace_name}}", "refId": "A" }],
-      "title": "Top Namespaces by Pod CPU",
+      "targets": [{ "expr": "topk(10, 100 * sum by (k8s_namespace_name) (k8s_pod_cpu_usage{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}) / scalar(sum(system_cpu_logical_count{k8s_node_name=~\"$node\"})))", "legendFormat": "{{k8s_namespace_name}}", "refId": "A" }],
+      "title": "Top Namespaces by CPU Utilization",
       "type": "timeseries"
     },
     {
@@ -180,12 +180,12 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
       "id": 16,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "targets": [{ "expr": "topk(15, sum by (k8s_pod_name) (k8s_pod_cpu_usage{k8s_node_name=~\"$node\",k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}))", "legendFormat": "{{k8s_pod_name}}", "refId": "A" }],
-      "title": "Selected Node: Pod CPU",
+      "targets": [{ "expr": "topk(15, 100 * sum by (k8s_node_name, k8s_pod_name) (k8s_pod_cpu_usage{k8s_node_name=~\"$node\",k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}) / on (k8s_node_name) group_left sum by (k8s_node_name) (system_cpu_logical_count{k8s_node_name=~\"$node\"}))", "legendFormat": "{{k8s_pod_name}}", "refId": "A" }],
+      "title": "Selected Node: Pod CPU Utilization",
       "type": "timeseries"
     },
     {
@@ -210,12 +210,12 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 53 },
       "id": 19,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "targets": [{ "expr": "sum by (k8s_container_name) (container_cpu_usage{k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"})", "legendFormat": "{{k8s_container_name}}", "refId": "A" }],
-      "title": "Selected Pod: Container CPU",
+      "targets": [{ "expr": "100 * sum by (k8s_node_name, k8s_container_name) (container_cpu_usage{k8s_node_name=~\"$node\",k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}) / on (k8s_node_name) group_left sum by (k8s_node_name) (system_cpu_logical_count{k8s_node_name=~\"$node\"})", "legendFormat": "{{k8s_container_name}}", "refId": "A" }],
+      "title": "Selected Pod: Container CPU Utilization",
       "type": "timeseries"
     },
     {
@@ -259,7 +259,7 @@
         "sort": 1,
         "multi": true,
         "includeAll": true,
-        "allValue": ".*",
+        "allValue": ".+",
         "hide": 0
       },
       {

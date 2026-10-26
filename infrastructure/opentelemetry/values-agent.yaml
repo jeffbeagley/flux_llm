@@ -54,6 +54,12 @@ config:
             scrape_interval: 30s
             static_configs:
               - targets: ['${env:MY_POD_IP}:8888']
+  processors:
+    resource/agent:
+      attributes:
+        - key: k8s.node.name
+          value: ${env:K8S_NODE_NAME}
+          action: upsert
   exporters:
     debug: null
     otlp_http/vm:
@@ -70,6 +76,7 @@ config:
         exporters: [otlp_http/vm]
       metrics:
         receivers: [prometheus, hostmetrics, kubeletstats]
+        processors: [k8s_attributes, memory_limiter, resource/agent, batch]
         exporters: [otlp_http/vm]
       traces: null
 ports:
