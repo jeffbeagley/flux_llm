@@ -17,8 +17,7 @@ presets:
 config:
   receivers:
     kubeletstats:
-      tls:
-        server_name: ${env:K8S_NODE_NAME}
+      insecure_skip_verify: true
     otlp: null
     jaeger: null
     zipkin: null

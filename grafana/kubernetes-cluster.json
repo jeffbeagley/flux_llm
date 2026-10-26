@@ -1,0 +1,323 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "9.1.2" }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "sum(k8s_node_condition_ready)", "instant": true, "refId": "A" }],
+      "title": "Ready Nodes",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "count(k8s_pod_phase == 2)", "instant": true, "refId": "A" }],
+      "title": "Running Pods",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "count(k8s_pod_phase == 1)", "instant": true, "refId": "A" }],
+      "title": "Pending Pods",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "100 * sum(k8s_deployment_available) / clamp_min(sum(k8s_deployment_desired), 1)", "instant": true, "refId": "A" }],
+      "title": "Deployment Availability",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "id": 5,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "sum(k8s_node_cpu_usage)", "instant": true, "refId": "A" }],
+      "title": "CPU in Use",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "id": 6,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "sum(k8s_node_memory_working_set_bytes)", "instant": true, "refId": "A" }],
+      "title": "Memory Working Set",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 7,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "sum by (k8s_node_name) (k8s_node_cpu_usage{k8s_node_name=~\"$node\"})", "legendFormat": "{{k8s_node_name}}", "refId": "A" }],
+      "title": "Node CPU Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 8,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * sum by (k8s_node_name) (k8s_node_memory_working_set_bytes{k8s_node_name=~\"$node\"}) / clamp_min(sum by (k8s_node_name) (k8s_node_memory_working_set_bytes{k8s_node_name=~\"$node\"} + k8s_node_memory_available_bytes{k8s_node_name=~\"$node\"}), 1)", "legendFormat": "{{k8s_node_name}}", "refId": "A" }],
+      "title": "Node Memory Used",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "id": 9,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * sum by (k8s_node_name) (k8s_node_filesystem_usage_bytes{k8s_node_name=~\"$node\"}) / clamp_min(sum by (k8s_node_name) (k8s_node_filesystem_usage_bytes{k8s_node_name=~\"$node\"} + k8s_node_filesystem_available_bytes{k8s_node_name=~\"$node\"}), 1)", "legendFormat": "{{k8s_node_name}}", "refId": "A" }],
+      "title": "Node Filesystem Used",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "topk(10, sum by (k8s_namespace_name) (k8s_pod_cpu_usage{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}))", "legendFormat": "{{k8s_namespace_name}}", "refId": "A" }],
+      "title": "Top Namespaces by Pod CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "id": 11,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "topk(10, sum by (k8s_namespace_name) (k8s_pod_memory_working_set_bytes{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}))", "legendFormat": "{{k8s_namespace_name}}", "refId": "A" }],
+      "title": "Top Namespaces by Pod Memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "id": 12,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "count by (k8s_namespace_name) (k8s_pod_phase{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"} == 2)", "legendFormat": "{{k8s_namespace_name}}", "refId": "A" }],
+      "title": "Running Pods by Namespace",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 13,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * sum by (k8s_namespace_name, k8s_deployment_name) (k8s_deployment_available{k8s_namespace_name=~\"$namespace\",k8s_deployment_name=~\"$deployment\"}) / clamp_min(sum by (k8s_namespace_name, k8s_deployment_name) (k8s_deployment_desired{k8s_namespace_name=~\"$namespace\",k8s_deployment_name=~\"$deployment\"}), 1)", "legendFormat": "{{k8s_namespace_name}} / {{k8s_deployment_name}}", "refId": "A" }],
+      "title": "Deployment Readiness",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 14,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * sum by (k8s_namespace_name, k8s_statefulset_name) (k8s_statefulset_ready_pods{k8s_namespace_name=~\"$namespace\"}) / clamp_min(sum by (k8s_namespace_name, k8s_statefulset_name) (k8s_statefulset_desired_pods{k8s_namespace_name=~\"$namespace\"}), 1)", "legendFormat": "{{k8s_namespace_name}} / {{k8s_statefulset_name}}", "refId": "A" }],
+      "title": "StatefulSet Readiness",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "id": 15,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * sum by (k8s_namespace_name, k8s_daemonset_name) (k8s_daemonset_ready_nodes{k8s_namespace_name=~\"$namespace\"}) / clamp_min(sum by (k8s_namespace_name, k8s_daemonset_name) (k8s_daemonset_desired_scheduled_nodes{k8s_namespace_name=~\"$namespace\"}), 1)", "legendFormat": "{{k8s_namespace_name}} / {{k8s_daemonset_name}}", "refId": "A" }],
+      "title": "DaemonSet Node Coverage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "id": 16,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "topk(15, sum by (k8s_pod_name) (k8s_pod_cpu_usage{k8s_node_name=~\"$node\",k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}))", "legendFormat": "{{k8s_pod_name}}", "refId": "A" }],
+      "title": "Selected Node: Pod CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+      "id": 17,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "topk(15, sum by (k8s_pod_name) (k8s_pod_memory_working_set_bytes{k8s_node_name=~\"$node\",k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}))", "legendFormat": "{{k8s_pod_name}}", "refId": "A" }],
+      "title": "Selected Node: Pod Memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 44 },
+      "id": 18,
+      "options": { "showHeader": true },
+      "targets": [{ "expr": "topk(20, sum by (k8s_namespace_name, k8s_pod_name, k8s_container_name) (k8s_container_restarts{k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"}))", "format": "table", "instant": true, "refId": "A" }],
+      "title": "Container Restarts",
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 53 },
+      "id": 19,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "sum by (k8s_container_name) (container_cpu_usage{k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"})", "legendFormat": "{{k8s_container_name}}", "refId": "A" }],
+      "title": "Selected Pod: Container CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 53 },
+      "id": 20,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "sum by (k8s_container_name) (container_memory_working_set_bytes{k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"})", "legendFormat": "{{k8s_container_name}}", "refId": "A" }],
+      "title": "Selected Pod: Container Memory",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": ["kubernetes", "opentelemetry", "prometheus"],
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": { "selected": true, "text": "Prometheus", "value": "Prometheus" },
+        "options": [],
+        "refresh": 1,
+        "hide": 0
+      },
+      {
+        "name": "node",
+        "label": "Node",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "definition": "label_values(k8s_node_condition_ready, k8s_node_name)",
+        "query": { "query": "label_values(k8s_node_condition_ready, k8s_node_name)", "refId": "Prometheus-node" },
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "options": [],
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "hide": 0
+      },
+      {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "definition": "label_values(k8s_pod_phase, k8s_namespace_name)",
+        "query": { "query": "label_values(k8s_pod_phase, k8s_namespace_name)", "refId": "Prometheus-namespace" },
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "options": [],
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "hide": 0
+      },
+      {
+        "name": "deployment",
+        "label": "Deployment",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "definition": "label_values(k8s_deployment_desired{k8s_namespace_name=~\"$namespace\"}, k8s_deployment_name)",
+        "query": { "query": "label_values(k8s_deployment_desired{k8s_namespace_name=~\"$namespace\"}, k8s_deployment_name)", "refId": "Prometheus-deployment" },
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "options": [],
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "hide": 0
+      },
+      {
+        "name": "pod",
+        "label": "Pod",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "definition": "label_values(k8s_pod_phase{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}, k8s_pod_name)",
+        "query": { "query": "label_values(k8s_pod_phase{k8s_namespace_name=~\"$namespace\",k8s_node_name=~\"$node\"}, k8s_pod_name)", "refId": "Prometheus-pod" },
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "options": [],
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "hide": 0
+      }
+    ]
+  },
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "Kubernetes / Cluster Operations",
+  "uid": "k8s-cluster-ops",
+  "version": 1
+}

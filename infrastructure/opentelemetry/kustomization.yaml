@@ -8,10 +8,14 @@ configMapGenerator:
     files:
       - values.yaml=values-agent.yaml
     options:
+      labels:
+        reconcile.fluxcd.io/watch: Enabled
       disableNameSuffixHash: true
   - name: otel-gateway-values
     namespace: flux-system
     files:
       - values.yaml=values-gateway.yaml
     options:
+      labels:
+        reconcile.fluxcd.io/watch: Enabled
       disableNameSuffixHash: true
