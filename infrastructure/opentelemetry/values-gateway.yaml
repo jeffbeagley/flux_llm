@@ -1,0 +1,52 @@
+mode: deployment
+replicaCount: 1
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: 0.163.2
+command:
+  name: otelcol-contrib
+presets:
+  clusterMetrics:
+    enabled: true
+  kubernetesEvents:
+    enabled: true
+  kubernetesAttributes:
+    enabled: true
+config:
+  exporters:
+    debug: null
+    otlp_http/vm:
+      endpoint: http://172.16.8.20:4318
+      compression: gzip
+      sending_queue:
+        enabled: true
+      retry_on_failure:
+        enabled: true
+  receivers:
+    jaeger: null
+    zipkin: null
+  service:
+    pipelines:
+      logs:
+        exporters: [otlp_http/vm]
+      metrics:
+        exporters: [otlp_http/vm]
+      traces:
+        receivers: [otlp]
+        exporters: [otlp_http/vm]
+ports:
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 192Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

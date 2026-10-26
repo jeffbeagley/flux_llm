@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - helm-releases.yaml
+configMapGenerator:
+  - name: otel-agent-values
+    namespace: flux-system
+    files:
+      - values.yaml=values-agent.yaml
+    options:
+      disableNameSuffixHash: true
+  - name: otel-gateway-values
+    namespace: flux-system
+    files:
+      - values.yaml=values-gateway.yaml
+    options:
+      disableNameSuffixHash: true

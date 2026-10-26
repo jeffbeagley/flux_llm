@@ -1,0 +1,94 @@
+mode: daemonset
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: 0.163.2
+command:
+  name: otelcol-contrib
+presets:
+  logsCollection:
+    enabled: true
+    storeCheckpoints: true
+  hostMetrics:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+  kubernetesAttributes:
+    enabled: true
+config:
+  receivers:
+    otlp: null
+    jaeger: null
+    zipkin: null
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: kubernetes-pods
+            scrape_interval: 30s
+            kubernetes_sd_configs:
+              - role: pod
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                action: keep
+                regex: "true"
+              - source_labels: [__meta_kubernetes_pod_node_name]
+                action: keep
+                regex: ${env:OTEL_K8S_NODE_NAME}
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                action: replace
+                regex: '([^:]+)(?::[0-9]+)?;([0-9]+)'
+                replacement: $1:$2
+                target_label: __address__
+              - source_labels: [__meta_kubernetes_namespace]
+                target_label: namespace
+              - source_labels: [__meta_kubernetes_pod_name]
+                target_label: pod
+              - source_labels: [__meta_kubernetes_pod_container_name]
+                target_label: container
+          - job_name: otel-agent
+            scrape_interval: 30s
+            static_configs:
+              - targets: ['${env:MY_POD_IP}:8888']
+  exporters:
+    debug: null
+    otlp_http/vm:
+      endpoint: http://172.16.8.20:4318
+      compression: gzip
+      sending_queue:
+        enabled: true
+      retry_on_failure:
+        enabled: true
+  service:
+    pipelines:
+      logs:
+        receivers: [file_log]
+        exporters: [otlp_http/vm]
+      metrics:
+        receivers: [prometheus, hostmetrics, kubeletstats]
+        exporters: [otlp_http/vm]
+      traces: null
+ports:
+  otlp:
+    enabled: false
+  otlp-http:
+    enabled: false
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 192Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+tolerations:
+  - operator: Exists
