@@ -227,6 +227,66 @@
       "targets": [{ "expr": "sum by (k8s_container_name) (container_memory_working_set_bytes{k8s_namespace_name=~\"$namespace\",k8s_pod_name=~\"$pod\"})", "legendFormat": "{{k8s_container_name}}", "refId": "A" }],
       "title": "Selected Pod: Container Memory",
       "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 61 },
+      "id": 21,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "targets": [{ "expr": "count(DCGM_FI_DEV_GPU_UTIL)", "instant": true, "refId": "A" }],
+      "title": "GPUs Reporting",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 18, "x": 6, "y": 61 },
+      "id": 22,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "DCGM_FI_DEV_GPU_UTIL{k8s_node_name=~\"$node\"}", "legendFormat": "{{k8s_node_name}} GPU {{gpu}}", "refId": "A" }],
+      "title": "GPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 69 },
+      "id": 23,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "100 * DCGM_FI_DEV_FB_USED{k8s_node_name=~\"$node\"} / clamp_min(DCGM_FI_DEV_FB_USED{k8s_node_name=~\"$node\"} + DCGM_FI_DEV_FB_FREE{k8s_node_name=~\"$node\"}, 1)", "legendFormat": "{{k8s_node_name}} GPU {{gpu}}", "refId": "A" }],
+      "title": "GPU Memory Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 69 },
+      "id": 24,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "DCGM_FI_DEV_FB_USED{k8s_node_name=~\"$node\"} * 1024 * 1024", "legendFormat": "{{k8s_node_name}} GPU {{gpu}}", "refId": "A" }],
+      "title": "GPU Memory Used",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "watt" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 77 },
+      "id": 25,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "DCGM_FI_DEV_POWER_USAGE{k8s_node_name=~\"$node\"}", "legendFormat": "{{k8s_node_name}} GPU {{gpu}}", "refId": "A" }],
+      "title": "GPU Power Draw",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": { "defaults": { "unit": "celsius" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 77 },
+      "id": 26,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [{ "expr": "DCGM_FI_DEV_GPU_TEMP{k8s_node_name=~\"$node\"}", "legendFormat": "{{k8s_node_name}} GPU {{gpu}}", "refId": "A" }],
+      "title": "GPU Temperature",
+      "type": "timeseries"
     }
   ],
   "refresh": "30s",
