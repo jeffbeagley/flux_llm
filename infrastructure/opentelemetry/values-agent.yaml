@@ -16,6 +16,9 @@ presets:
     enabled: true
 config:
   receivers:
+    kubeletstats:
+      tls:
+        server_name: ${env:K8S_NODE_NAME}
     otlp: null
     jaeger: null
     zipkin: null
